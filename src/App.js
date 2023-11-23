@@ -44,8 +44,8 @@ const App = ({ signOut }) => {
         await Promise.all(
             notesFromAPI.map(async (note) => {
               if (note.image) {
-                const url = await getUrl(note.name);
-                note.image = url;
+                const urlResult = await getUrl(note.name);
+                note.image = urlResult.url;
               }
               return note;
             })
@@ -130,6 +130,7 @@ const App = ({ signOut }) => {
                            <Image
                                 src={note.image}
                                 alt={`visual aid for ${notes.name}`}
+                                //alt={note.image}
                                 style={{ width: 400 }}
                            />
                         )}
