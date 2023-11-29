@@ -44,6 +44,8 @@ const App = ({ signOut }) => {
         await Promise.all(
             notesFromAPI.map(async (note) => {
               if (note.image) {
+                console.log("fetching with name: ")
+                console.log(note.name)
                 const urlResult = await getUrl(note.name);
                 note.image = urlResult.url;
               }
@@ -62,7 +64,9 @@ const App = ({ signOut }) => {
             description: form.get("description"),
             image: image.name,
         };
-        if (!!data.image) await uploadData({key: data.name, data: image});
+        console.log("uploading with name")
+        console.log(data.name)
+        if (!!data.image) await uploadData({key: data.name, data: image});        
         await client.graphql({
             query: createNoteMutation,
             variables: { input: data },
