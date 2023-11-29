@@ -66,7 +66,10 @@ const App = ({ signOut }) => {
         };
         console.log("uploading with name")
         console.log(data.name)
-        if (!!data.image) await uploadData({key: data.name, data: image});        
+        if (!!data.image) {
+            await uploadData({key: data.name, data: image, options: {accessLevel: 'guest'}});        
+            console.log("upload success for " + data.name)
+        }
         await client.graphql({
             query: createNoteMutation,
             variables: { input: data },
