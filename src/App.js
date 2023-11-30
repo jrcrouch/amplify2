@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
-//import  {Image, Text, StyleSheet} from 'react-native'
 import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
-
-//import { API } from "aws-amplify/api";
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/api';
 import { uploadData, getUrl, remove } from 'aws-amplify/storage';
 import config from './amplifyconfiguration.json';
-
 import {
     Button,
     Flex,
@@ -24,11 +20,11 @@ import {
     createNote as createNoteMutation,
     deleteNote as deleteNoteMutation,
 } from "./graphql/mutations";
-
-//import Image from './Image';
+import { Auth } from 'aws-amplify';
 
 Amplify.configure(config);
 const client = generateClient();
+const credentials = await Auth.currentUserCredentials();
 
 const App = ({ signOut }) => {
     
@@ -46,7 +42,7 @@ const App = ({ signOut }) => {
               if (note.image) {
                 console.log("fetching with name: ")
                 console.log(note.name)
-                const urlResult = await getUrl(note.name);
+                const urlResult = await getUrl({key: note.name, options:{accessLevel?: 'guest', targetIdentityId?: 'XXX'}});
                 note.image = urlResult.url;
               }
               return note;
@@ -67,7 +63,14 @@ const App = ({ signOut }) => {
         console.log("uploading with name")
         console.log(data.name)
         if (!!data.image) {
-            await uploadData({key: data.name, data: image, options: {accessLevel: 'guest'}});        
+            let options = StorageUploadDataRequest.Options({accessLevel: 'guest'})
+            let uploadTask = await uploadData({
+                key: key,
+                data: data,
+                options: options}
+            )
+          
+            //await uploadData({key: data.name, data: image, options: {accessLevel: 'guest'}});        
             console.log("upload success for " + data.name)
         }
         await client.graphql({
